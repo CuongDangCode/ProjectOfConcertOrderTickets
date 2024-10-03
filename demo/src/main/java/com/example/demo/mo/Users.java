@@ -1,7 +1,8 @@
-package com.example.mo;
+package java.com.example.demo;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

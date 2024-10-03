@@ -27,5 +27,5 @@ public class ConcertOwner {
     private String addressConcert;
     private String hotline;
     private String email;
-    private int employeeID;
+    // private int employeeID;
 }
