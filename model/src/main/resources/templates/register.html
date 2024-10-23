@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration Form</title>
+    <style>
+        html, body {
+            background-image: url(https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .captcha {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .captcha .preview {
+            display: flex;
+            margin-right: 10px;
+        }
+
+        .captcha span {
+            display: inline-block;
+            margin: 2px;
+            font-size: 20px;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+</head>
+<body class="bg-[#e8c1a0] flex items-center justify-center min-h-screen">
+
+    <!-- Registration Container -->
+    <div class="bg-[#0a043c] text-white rounded-lg p-8 w-96">
+
+        <!-- Welcome Text -->
+        <h2 class="text-xl font-semibold text-center mb-2">Create Your Account</h2>
+        <p class="text-center text-sm mb-6">Fill in the details below</p>
+
+        <!-- Success/Error Message -->
+        <div class="mb-4" th:if="${session.msg}">
+            <p class="text-green-500 text-center" th:text="${session.msg}"></p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registration-form" action="saveUser" method="post">
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="userName">
+                    <i class="fas fa-user mr-2"></i> Full Name
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="userName" name="userName" type="text" placeholder="Enter your name" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="email">
+                    <i class="fas fa-envelope mr-2"></i> Email
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="email" name="email" type="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="userPassword">
+                    <i class="fas fa-lock mr-2"></i> Password
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="userPassword" name="userPassword" type="password" placeholder="Enter your password" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="phone">
+                    <i class="fas fa-phone mr-2"></i> Mobile Number
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="phone" name="phone" type="number" placeholder="Enter your mobile number" required />
+            </div>
+
+            <!-- Captcha -->
+            <div class="captcha mb-4">
+                <div class="flex justify-between items-center">
+                    <div class="preview bg-white text-black px-3 py-2 rounded mr-2"></div>
+                    <button type="button" class="captcha-refresh bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600">
+                        <i class="fa fa-refresh"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="captcha-input">
+                    <i class="fas fa-key mr-2"></i> Enter Captcha
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="captcha-input" type="text" placeholder="Enter captcha" required />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="register-button">
+                <button class="w-full bg-[#b392ac] text-white py-2 rounded hover:bg-[#9a798f] transition duration-300" type="submit" id="register-btn" disabled>
+                    Register
+                </button>
+            </div>
+        </form>
+
+        <!-- Login Link -->
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-400 mb-2">Already have an account?</p>
+            <a href="#" th:href="@{/login}" class="text-sm text-[#b392ac] hover:text-white transition duration-300">Login</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    (function(){
+        const fonts = ["cursive", "sans-serif", "serif", "monospace"];
+        let captchaValue = "";
+
+        function generateCaptcha() {
+            let value = btoa(Math.random() * 1000000000).substr(0, 5 + Math.random() * 5);
+            captchaValue = value;
+            setCaptcha();
+        }
+
+        function setCaptcha() {
+            const html = captchaValue.split("").map((char) => {
+                const rotate = -20 + Math.trunc(Math.random() * 30);
+                const font = Math.trunc(Math.random() * fonts.length);
+                return `<span style="transform:rotate(${rotate}deg); font-family:${fonts[font]};">${char}</span>`;
+            }).join("");
+            document.querySelector(".captcha .preview").innerHTML = html;
+        }
+
+        function initCaptcha() {
+            document.querySelector(".captcha-refresh").addEventListener("click", function() {
+                generateCaptcha();
+            });
+            generateCaptcha();
+        }
+
+        function validateForm() {
+            const form = document.getElementById('registration-form');
+            const inputs = form.querySelectorAll('input');
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (!input.value) {
+                    allFilled = false;
+                }
+            });
+            const inputCaptchaValue = document.getElementById('captcha-input').value;
+            const registerButton = document.getElementById('register-btn');
+            if (allFilled && inputCaptchaValue === captchaValue) {
+                registerButton.disabled = false;
+                registerButton.parentElement.style.pointerEvents = 'auto';
+                registerButton.parentElement.style.opacity = '1';
+            } else {
+                registerButton.disabled = true;
+                registerButton.parentElement.style.pointerEvents = 'none';
+                registerButton.parentElement.style.opacity = '0.5';
+            }
+        }
+
+        initCaptcha();
+
+        document.querySelector("#captcha-input").addEventListener("input", validateForm);
+        document.querySelectorAll('#registration-form input').forEach(input => {
+            input.addEventListener("input", validateForm);
+        });
+
+        document.getElementById('registration-form').addEventListener('submit', function(event) {
+            const inputCaptchaValue = document.getElementById('captcha-input').value;
+            if (inputCaptchaValue !== captchaValue) {
+                event.preventDefault();
+                Swal.fire("Invalid captcha");
+            }
+        });
+    })();
+</script>
+</body>
+</html>

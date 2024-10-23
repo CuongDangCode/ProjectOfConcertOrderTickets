@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        html, body {
+            background-image: url(https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+</head>
+<body class="bg-[#e8c1a0] flex items-center justify-center min-h-screen">
+
+    <!-- Login Container -->
+    <div class="bg-[#0a043c] text-white rounded-lg p-8 w-80">
+
+        <!-- Welcome Text -->
+        <h2 class="text-xl font-semibold text-center mb-2">WELCOME</h2>
+        <p class="text-center text-sm mb-6">Sign in to our website</p>
+
+        <!-- Error Message -->
+        <th:block th:if="${param.error}">
+            <p class="error-message text-red-500 text-center mb-4" th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
+                <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></span>
+            </p>
+            <p class="error-message text-red-500 text-center mb-4" th:unless="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
+                Invalid username or password.
+            </p>
+        </th:block>
+
+        <!-- Login Form -->
+        <form action="userLogin" method="post">
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="email">
+                    <i class="fas fa-user mr-2"></i> Email
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="email" name="username" type="text" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm mb-2" for="password">
+                    <i class="fas fa-lock mr-2"></i> Password
+                </label>
+                <input class="w-full px-3 py-2 text-black rounded" id="password" name="password" type="password" placeholder="Enter your password" required />
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div class="flex justify-between items-center mb-6">
+                <a href="#" th:href="@{/forgotPassword}" class="text-sm text-gray-400 hover:text-gray-200">Forgot password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button class="w-full bg-[#b392ac] text-white py-2 rounded mb-4 hover:bg-[#9a798f] transition duration-300">
+                Login
+            </button>
+        </form>
+
+        <!-- Registration Link -->
+        <div class="text-center">
+            <p class="text-sm text-gray-400 mb-2">Don't have an account?</p>
+            <a href="#" th:href="@{/register}" class="text-sm text-[#b392ac] hover:text-white transition duration-300">Register</a>
+        </div>
+    </div>
+    
+</body>
+</html>
